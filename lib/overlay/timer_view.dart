@@ -67,7 +67,7 @@ class _TimerViewState extends State<TimerView> {
           ],
           Text(
             _formatCountdown(remaining),
-            style: const TextStyle(
+            style: TextStyle(
               color: UslandDesign.textPrimary,
               fontSize: 22,
               fontWeight: FontWeight.w700,

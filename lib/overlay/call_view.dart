@@ -77,7 +77,7 @@ class _CallViewState extends State<CallView> {
           ),
           Text(
             _formattedDuration,
-            style: const TextStyle(
+            style: TextStyle(
               color: UslandDesign.periwinkle,
               fontSize: 13,
               fontFamily: 'monospace',
