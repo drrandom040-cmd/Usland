@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     companion object {
-        var channel: MethodChannel? = null
+        var eventChannel: MethodChannel? = null
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
@@ -55,12 +55,9 @@ class MainActivity: FlutterActivity() {
         // Permissions Channel
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.elsewhere.usland/permissions").setMethodCallHandler { call, result ->
             when (call.method) {
-                "checkOverlayPermission" -> {
-                    result.success(Settings.canDrawOverlays(this))
-                }
+                "checkOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
                 "requestOverlayPermission" -> {
-                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                    startActivity(intent)
+                    startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
                     result.success(null)
                 }
                 "checkNotificationListenerPermission" -> {
@@ -88,44 +85,26 @@ class MainActivity: FlutterActivity() {
             }
         }
 
-        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.elsewhere.usland/events")
-
-        // Actions channel — used by NotificationState to open apps
+        // Actions Channel
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.elsewhere.usland/actions").setMethodCallHandler { call, result ->
-            when (call.method) {
-                "openApp" -> {
-                    val packageName = call.argument<String>("packageName")
-                    if (packageName != null) {
-                        val intent = packageManager.getLaunchIntentForPackage(packageName)
-                        if (intent != null) {
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                            result.success(null)
-                        } else {
-                            result.error("NOT_FOUND", "App not found: $packageName", null)
-                        }
+            if (call.method == "openApp") {
+                val pkg = call.argument<String>("packageName")
+                if (pkg != null) {
+                    val intent = packageManager.getLaunchIntentForPackage(pkg)
+                    if (intent != null) {
+                        startActivity(intent)
+                        result.success(true)
                     } else {
-                        result.error("INVALID", "packageName is null", null)
+                        result.success(false)
                     }
+                } else {
+                    result.error("INVALID_ARGUMENT", "Package name is null", null)
                 }
-                else -> result.notImplemented()
+            } else {
+                result.notImplemented()
             }
         }
 
-        // Media channel — used by MediaView to toggle play/pause
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.elsewhere.usland/media").setMethodCallHandler { call, result ->
-            when (call.method) {
-                "togglePlayPause" -> {
-                    val audioManager = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
-                    val event = android.view.KeyEvent(
-                        android.view.KeyEvent.ACTION_DOWN,
-                        android.view.KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
-                    )
-                    audioManager.dispatchMediaKeyEvent(event)
-                    result.success(null)
-                }
-                else -> result.notImplemented()
-            }
-        }
+        eventChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.elsewhere.usland/events")
     }
 }

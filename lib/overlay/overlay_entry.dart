@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:provider/provider.dart';
 import 'package:usland/overlay/pill_widget.dart';
 import 'package:usland/state/notification_state.dart';
 
-// This is the entry point for the overlay window spawned by flutter_overlay_window.
-// It runs in a separate Flutter engine from the main app.
 void overlayMainEntry() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
@@ -17,8 +16,37 @@ void overlayMainEntry() {
   );
 }
 
-class OverlayRoot extends StatelessWidget {
+class OverlayRoot extends StatefulWidget {
   const OverlayRoot({super.key});
+
+  @override
+  State<OverlayRoot> createState() => _OverlayRootState();
+}
+
+class _OverlayRootState extends State<OverlayRoot> {
+  @override
+  void initState() {
+    super.initState();
+    _initOverlayListener();
+  }
+
+  void _initOverlayListener() {
+    FlutterOverlayWindow.overlayListener.listen((event) {
+      if (event is Map) {
+        final state = context.read<NotificationState>();
+        final type = event['type'];
+        final data = event['data'];
+
+        if (type == 'notification') {
+          state.pushNotification(NotificationData.fromJson(data));
+        } else if (type == 'media') {
+          state.setMedia(MediaData.fromJson(data));
+        } else if (type == 'screen') {
+          state.setScreenState(data == 'on');
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +54,12 @@ class OverlayRoot extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            PillWidget(),
-          ],
+        body: SizedBox.expand(
+          child: Stack(
+            children: [
+              PillWidget(),
+            ],
+          ),
         ),
       ),
     );

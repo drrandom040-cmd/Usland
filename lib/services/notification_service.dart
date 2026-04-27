@@ -1,4 +1,5 @@
 import 'package:notification_listener_service/notification_listener_service.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:usland/state/notification_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,28 +23,9 @@ class NotificationService {
     _mutedPackages.addAll(muted);
   }
 
-  Future<void> mutePackage(String packageName) async {
-    _mutedPackages.add(packageName);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('muted_packages', _mutedPackages.toList());
-  }
-
-  Future<void> unmutePackage(String packageName) async {
-    _mutedPackages.remove(packageName);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('muted_packages', _mutedPackages.toList());
-  }
-
-  bool isMuted(String packageName) => _mutedPackages.contains(packageName);
-
   void _handleNotification(NotificationEvent event) {
-    // Ignore our own notifications
     if (event.packageName == 'com.elsewhere.usland') return;
-
-    // Ignore muted apps
     if (_mutedPackages.contains(event.packageName)) return;
-
-    // Ignore dismissal events
     if (event.hasRemoved == true) return;
 
     final data = NotificationData(
@@ -54,6 +36,13 @@ class NotificationService {
       timestamp: DateTime.now(),
     );
 
+    // Update main app state
     state.pushNotification(data);
+
+    // Share with overlay
+    FlutterOverlayWindow.sendMessage({
+      'type': 'notification',
+      'data': data.toJson(),
+    });
   }
 }

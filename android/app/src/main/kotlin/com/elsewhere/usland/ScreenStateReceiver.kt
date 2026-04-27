@@ -8,10 +8,10 @@ class ScreenStateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Intent.ACTION_SCREEN_OFF -> {
-                MainActivity.channel?.invokeMethod("screenOff", null)
+                MainActivity.eventChannel?.invokeMethod("screenOff", null)
             }
             Intent.ACTION_SCREEN_ON -> {
-                MainActivity.channel?.invokeMethod("screenOn", null)
+                MainActivity.eventChannel?.invokeMethod("screenOn", null)
             }
         }
     }
