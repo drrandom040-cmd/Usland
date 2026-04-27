@@ -23,11 +23,18 @@
         android:icon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Translucent.NoTitleBar">
 
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,12 +42,10 @@
         </activity>
 
         <!-- Overlay foreground service -->
-        <!-- foregroundServiceType only applies on API 34+ per OverlayService.kt logic -->
         <service
             android:name=".OverlayService"
             android:exported="false"
-            android:foregroundServiceType="specialUse"
-            tools:targetApi="34" />
+            android:foregroundServiceType="specialUse" />
 
         <!-- Notification listener service -->
         <service
