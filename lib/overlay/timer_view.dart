@@ -1,11 +1,33 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:usland/state/notification_state.dart';
 import 'package:usland/utils/design.dart';
 
-class TimerView extends StatelessWidget {
+class TimerView extends StatefulWidget {
   final TimerData? data;
 
   const TimerView({super.key, required this.data});
+
+  @override
+  State<TimerView> createState() => _TimerViewState();
+}
+
+class _TimerViewState extends State<TimerView> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   String _formatCountdown(Duration remaining) {
     if (remaining.isNegative) return '00:00';
@@ -18,9 +40,9 @@ class TimerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (data == null) return const SizedBox.shrink();
+    if (widget.data == null) return const SizedBox.shrink();
 
-    final remaining = data!.endsAt.difference(DateTime.now());
+    final remaining = widget.data!.endsAt.difference(DateTime.now());
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -33,9 +55,9 @@ class TimerView extends StatelessWidget {
             size: 20,
           ),
           const SizedBox(width: 10),
-          if (data!.label != null) ...[
+          if (widget.data!.label != null) ...[
             Text(
-              data!.label!,
+              widget.data!.label!,
               style: const TextStyle(
                 color: UslandDesign.textSecondary,
                 fontSize: 12,
