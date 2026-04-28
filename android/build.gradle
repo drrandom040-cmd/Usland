@@ -1,16 +1,3 @@
-buildscript {
-    ext.kotlin_version = '1.8.22'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -18,19 +5,16 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(":app")
 }
 
-// Global fix for "Namespace not specified" in older plugins
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
-            if (project.android.namespace == null) {
+            if (!project.android.hasProperty("namespace") || project.android.namespace == null) {
                 project.android.namespace = project.group
             }
         }
