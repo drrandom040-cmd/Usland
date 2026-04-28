@@ -99,7 +99,7 @@ class _SetupScreenState extends State<SetupScreen> {
       overlayContent: 'Overlay active',
       flag: OverlayFlag.defaultFlag,
       visibility: NotificationVisibility.visibilityPublic,
-      positionGravity: PositionGravity.top,
+      positionGravity: PositionGravity.none,
       width: WindowSize.matchParent,
       height: 120,
     );
