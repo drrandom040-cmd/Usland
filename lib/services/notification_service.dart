@@ -23,7 +23,7 @@ class NotificationService {
     _mutedPackages.addAll(muted);
   }
 
-  void _handleNotification(Map<String, dynamic> event) {
+  void _handleNotification(ServiceNotificationEvent event) {
     if (event.packageName == 'com.elsewhere.usland') return;
     if (_mutedPackages.contains(event.packageName)) return;
     if (event.hasRemoved == true) return;
@@ -36,10 +36,8 @@ class NotificationService {
       timestamp: DateTime.now(),
     );
 
-    // Update main app state
     state.pushNotification(data);
 
-    // Share with overlay
     FlutterOverlayWindow.shareData({
       'type': 'notification',
       'data': data.toJson(),
