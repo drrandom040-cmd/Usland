@@ -40,7 +40,7 @@ class NotificationService {
     state.pushNotification(data);
 
     // Share with overlay
-    FlutterOverlayWindow.sendMessage({
+    FlutterOverlayWindow.shareData({
       'type': 'notification',
       'data': data.toJson(),
     });
