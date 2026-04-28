@@ -23,7 +23,7 @@ class NotificationService {
     _mutedPackages.addAll(muted);
   }
 
-  void _handleNotification(ServiceNotificationEvent event) {
+  void _handleNotification(dynamic event) {
     if (event.packageName == 'com.elsewhere.usland') return;
     if (_mutedPackages.contains(event.packageName)) return;
     if (event.hasRemoved == true) return;
